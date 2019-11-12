@@ -1,0 +1,9 @@
+spi.c:40:6:spi_Init	56	static
+spi.c:107:10:spi_SendData16	16	static
+spi.c:117:9:spi_SendData8	16	static
+spi.c:126:6:spi_WriteBidirectionalByte	16	static
+spi.c:134:9:spi_ReadBidirectionalByte	24	static
+spi.c:143:6:spi_SetPrescaler	16	static
+spi.c:154:6:spi_SetMode	16	static
+spi.c:165:6:spi_WaitForNoBusy	16	static
+spi.c:170:6:spi_SetDirection	16	static

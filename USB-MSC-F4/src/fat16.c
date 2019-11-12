@@ -7,6 +7,7 @@
 
 #include "fat16.h"
 #include <string.h>
+#include <stdio.h>
 
 // http://www.maverick-os.dk/FileSystemFormats/FAT16_FileSystem.html
 
@@ -89,6 +90,7 @@ typedef struct
 #define FAT16_RESERVED_SECTORS               1
 #define FAT16_NUMBER_OF_FATS                 1
 #define FAT16_FAT_SIZE_SECTORS               2
+#define FAT16_FAT_ITEMS_PER_SECTOR        (FAT16_BLOCK_SIZE / FAT16_FAT_ITEM_SIZE)
 #define FAT16_DIR_ENTRIES                  128
 #define FAT16_DIR_ENTRY_SIZE                32
 #define FAT16_DIR_BLOCKS                  (FAT16_DIR_ENTRIES * FAT16_DIR_ENTRY_SIZE / FAT16_SECTOR_SIZE)
@@ -226,24 +228,45 @@ static const Fat16DirEntry g_arrFatFilesTempl[] =
     },
 };
 
-static uint8_t g_arrData[1024];
+#define STATION_LEN     4
+#define DATA_COUNT     50
+typedef struct
+{
+  uint32_t       nDistance_mm;                 // mm
+  uint16_t       nAzimuth;
+  int16_t        nIncl;
+  char           strFrom[STATION_LEN + 1];
+  char           strTo[STATION_LEN + 1];
+} cave_data_t;
+
+static cave_data_t  g_arrData[DATA_COUNT];
 
 
 void FAT16_Init(void)
 {
-  char*  strHeader = "From;To;Length;Azimuth;Inclination\n";
-  memset (g_arrData, ' ', sizeof (g_arrData));
-  memcpy (g_arrData, strHeader, strlen (strHeader));
+  for (uint16_t i = 0; i < DATA_COUNT; ++i)
+  {
+    g_arrData[i].nAzimuth = i * 5;
+    g_arrData[i].nIncl = i;
+    g_arrData[i].nDistance_mm = 1000 + i * 50;
+    snprintf(g_arrData[i].strFrom, STATION_LEN, "A%d", i + 1);
+    snprintf(g_arrData[i].strTo, STATION_LEN, "A%d", i + 2);
+  }
 
-  g_nFilesCount = 0;
-  uint32_t   nTemplSize = sizeof(g_arrFatFilesTempl) / sizeof(Fat16DirEntry);
-  for (uint8_t i = 0; i < nTemplSize; ++i)
+  char*  strHeader = "From;To;Length;Azimuth;Inclination\n";
+
+  memcpy (&g_arrFatFiles[0], &g_arrFatFilesTempl[0], sizeof(Fat16DirEntry));
+  g_nFilesCount = DATA_COUNT + 1;
+
+  // vyplnit tabulku start/end block podle delky souboru
+  Fat16DirEntry    dirEntry;
+  for (uint8_t i = 0; i < DATA_COUNT; ++i)
   {
     memcpy (&g_arrFatFiles[i], &g_arrFatFilesTempl[i], sizeof(Fat16DirEntry));
     g_nFilesCount++;
   }
 
-  // vyplnit tabulku start/end block podle delky souboru
+
 
 }
 
@@ -251,8 +274,8 @@ void FAT16_Init(void)
 void FAT16_CreateBlockFAT(uint8_t *buf, uint16_t nBlockOffset)
 {
   static uint16_t nLastFile = 0;
-  uint16_t nSectorIndex = 0;
 
+  uint16_t nSectorIndex = nBlockOffset * FAT16_FAT_ITEMS_PER_SECTOR;
   memset(buf, 0, FAT16_BLOCK_SIZE);
   if (nBlockOffset == 0)
   {
@@ -261,16 +284,16 @@ void FAT16_CreateBlockFAT(uint8_t *buf, uint16_t nBlockOffset)
     nLastFile = 0;
   }
 
-  for (uint8_t i = nLastFile; i < g_nFilesCount; ++i, nLastFile++)
+  for (uint16_t i = nLastFile; i < g_nFilesCount; ++i, nLastFile++)
   {
     if (g_arrFatFiles[i].file_size == 0)
     {
       continue;
     }
 
-    for (uint8_t nFatEntry = g_arrFatFiles[i].starting_cluster; nFatEntry <= g_arrFatFiles[i].ending_cluster; ++nFatEntry)
+    for (uint16_t nFatEntry = g_arrFatFiles[i].starting_cluster; nFatEntry <= g_arrFatFiles[i].ending_cluster; ++nFatEntry)
     {
-      if (nSectorIndex / FAT16_BLOCK_SIZE / FAT16_FAT_ITEM_SIZE == nBlockOffset)
+      if (nFatEntry / FAT16_FAT_ITEMS_PER_SECTOR == nBlockOffset)
       {
         uint16_t* pBuffer = (uint16_t*)buf + nSectorIndex;
         if (nFatEntry == g_arrFatFiles[i].ending_cluster)
@@ -283,7 +306,7 @@ void FAT16_CreateBlockFAT(uint8_t *buf, uint16_t nBlockOffset)
         }
 
         nSectorIndex++;
-        if (nSectorIndex == FAT16_BLOCK_SIZE / FAT16_FAT_ITEM_SIZE)
+        if (nSectorIndex == FAT16_FAT_ITEMS_PER_SECTOR)
         {
           return;
         }
@@ -296,7 +319,7 @@ void FAT16_CreateBlockDIR(uint8_t *buf, uint16_t nBlockOffset)
 {
   memset(buf, 0, FAT16_BLOCK_SIZE);
   uint16_t  nDirEntryIndex = FAT16_BLOCK_SIZE * nBlockOffset / FAT16_DIR_ENTRY_SIZE;
-  for (uint8_t i = 0; g_nFilesCount > nDirEntryIndex && i < FAT16_DIR_ENTRIES_IN_BLOCK; ++nDirEntryIndex, ++i)
+  for (uint16_t i = 0; g_nFilesCount > nDirEntryIndex && i < FAT16_DIR_ENTRIES_IN_BLOCK; ++nDirEntryIndex, ++i)
   {
     memcpy(buf + i * FAT16_DIR_ENTRY_SIZE, &g_arrFatFiles[nDirEntryIndex], sizeof(Fat16DirEntry));
   }
