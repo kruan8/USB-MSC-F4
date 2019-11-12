@@ -1,0 +1,6 @@
+usbd_msc_core.c:267:10:USBD_MSC_Init	16	static
+usbd_msc_core.c:297:10:USBD_MSC_DeInit	16	static
+usbd_msc_core.c:315:10:USBD_MSC_Setup	16	static
+usbd_msc_core.c:427:10:USBD_MSC_DataIn	16	static
+usbd_msc_core.c:441:10:USBD_MSC_DataOut	16	static
+usbd_msc_core.c:455:11:USBD_MSC_GetCfgDesc	16	static

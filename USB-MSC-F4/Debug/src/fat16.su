@@ -1,0 +1,6 @@
+fat16.c:195:10:FAT16_GetStorageSize	4	static
+fat16.c:242:6:FAT16_Init	24	static
+fat16.c:261:6:FAT16_CreateBlockFAT	24	static
+fat16.c:305:6:FAT16_CreateBlockDIR	24	static
+fat16.c:315:6:FAT16_CreateBlockDATA	16	static
+fat16.c:321:6:FAT16_CreateBlock	32	static
