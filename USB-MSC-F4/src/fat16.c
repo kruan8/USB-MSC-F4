@@ -228,8 +228,26 @@ static const Fat16DirEntry g_arrFatFilesTempl[] =
     },
 };
 
-#define STATION_LEN     4
-#define DATA_COUNT     50
+typedef struct
+{
+  char strFilename[12];
+  uint32_t nDataCount;
+} cave_file_t;
+
+const cave_file_t arrFiles[] =
+{
+    { "CAVE_1", 32 },
+    { "CAVE_2", 50 },
+    { "CAVE_3", 37 },
+    { "CAVE_4", 16 },
+    { "CAVE_5", 28 },
+};
+
+#define STATION_LEN               4
+#define DATA_COUNT               50
+#define DATA_ITEM_BUFFER         32     // size has to by power of 2 only
+#define ITEMS_PER_SECTOR        (FAT16_BLOCK_SIZE / DATA_ITEM_BUFFER)
+
 typedef struct
 {
   uint32_t       nDistance_mm;                 // mm
@@ -240,7 +258,7 @@ typedef struct
 } cave_data_t;
 
 static cave_data_t  g_arrData[DATA_COUNT];
-
+static char         g_arrItemBuffer[DATA_ITEM_BUFFER];
 
 void FAT16_Init(void)
 {
@@ -255,19 +273,35 @@ void FAT16_Init(void)
 
   char*  strHeader = "From;To;Length;Azimuth;Inclination\n";
 
+  // add volume name entry
   memcpy (&g_arrFatFiles[0], &g_arrFatFilesTempl[0], sizeof(Fat16DirEntry));
-  g_nFilesCount = DATA_COUNT + 1;
+  g_nFilesCount = 1;
 
-  // vyplnit tabulku start/end block podle delky souboru
+  // add all files from Flash storage
+  uint16_t nCluster = 2;
   Fat16DirEntry    dirEntry;
-  for (uint8_t i = 0; i < DATA_COUNT; ++i)
+  dirEntry.attributes = 0x21;
+  dirEntry.modify_time = 0xA35A;
+  dirEntry.modify_date = 0x4E81;
+  memcpy(dirEntry.ext, "TXT", 3);
+//  snprintf((char*)dirEntry.ext, 3, "%s", "TXT");
+
+  uint16_t nFilesCount = sizeof(arrFiles) / sizeof(cave_file_t);
+  for (uint8_t i = 0; i < nFilesCount; ++i)
   {
-    memcpy (&g_arrFatFiles[i], &g_arrFatFilesTempl[i], sizeof(Fat16DirEntry));
+    memset(dirEntry.filename, ' ', 8);
+    memcpy(dirEntry.filename, arrFiles[i].strFilename, strlen(arrFiles[i].strFilename));
+//    snprintf((char*)dirEntry.filename, 8, "%s", arrFiles[i].strFilename);
+    dirEntry.file_size = arrFiles[i].nDataCount * DATA_ITEM_BUFFER;
+    dirEntry.starting_cluster = nCluster;
+    nCluster += dirEntry.file_size / FAT16_BLOCK_SIZE;
+    dirEntry.ending_cluster = nCluster;
+
+    memcpy(&g_arrFatFiles[g_nFilesCount], &dirEntry, sizeof(Fat16DirEntry));
+
+    nCluster++;
     g_nFilesCount++;
   }
-
-
-
 }
 
 
@@ -284,7 +318,7 @@ void FAT16_CreateBlockFAT(uint8_t *buf, uint16_t nBlockOffset)
     nLastFile = 0;
   }
 
-  for (uint16_t i = nLastFile; i < g_nFilesCount; ++i, nLastFile++)
+  for (uint16_t i = 0; i < g_nFilesCount; ++i)
   {
     if (g_arrFatFiles[i].file_size == 0)
     {
@@ -306,7 +340,7 @@ void FAT16_CreateBlockFAT(uint8_t *buf, uint16_t nBlockOffset)
         }
 
         nSectorIndex++;
-        if (nSectorIndex == FAT16_FAT_ITEMS_PER_SECTOR)
+        if ((nSectorIndex % FAT16_FAT_ITEMS_PER_SECTOR) == 0)
         {
           return;
         }
@@ -327,7 +361,30 @@ void FAT16_CreateBlockDIR(uint8_t *buf, uint16_t nBlockOffset)
 
 void FAT16_CreateBlockDATA(uint8_t *buf, uint16_t nBlockOffset)
 {
-  memcpy(buf, g_arrData, FAT16_BLOCK_SIZE);
+  memset(buf, ' ', FAT16_BLOCK_SIZE);
+
+  uint16_t nFilesCount = sizeof(arrFiles) / sizeof(cave_file_t);
+  for (uint8_t i = 0; i < nFilesCount; ++i)
+  {
+    if (nBlockOffset >= g_arrFatFiles[i].starting_cluster && nBlockOffset <= g_arrFatFiles[i].ending_cluster)
+    {
+      uint32_t nDataItem = (nBlockOffset - g_arrFatFiles[i].starting_cluster) * ITEMS_PER_SECTOR;
+      for (uint8_t ix = 0; ix < ITEMS_PER_SECTOR; ++ix)
+      {
+        if ((nDataItem + ix) * DATA_ITEM_BUFFER >= g_arrFatFiles[i].file_size)
+        {
+          break;
+        }
+
+        cave_data_t* pData = &g_arrData[nDataItem + ix];
+        snprintf(g_arrItemBuffer, DATA_ITEM_BUFFER, "%5s;%5s;%5lu;%5d;%5d\n", pData->strFrom, pData->strTo, pData->nDistance_mm, pData->nIncl, pData->nAzimuth);
+        memcpy(buf + ix * DATA_ITEM_BUFFER, g_arrItemBuffer, strlen(g_arrItemBuffer));
+      }
+
+      break;
+    }
+  }
+
 }
 
 // ------------------------------------------------------------------------------------------
