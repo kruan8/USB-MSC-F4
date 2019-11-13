@@ -258,7 +258,7 @@ typedef struct
 } cave_data_t;
 
 static cave_data_t  g_arrData[DATA_COUNT];
-static char         g_arrItemBuffer[DATA_ITEM_BUFFER];
+static char         g_arrItemBuffer[DATA_ITEM_BUFFER + 1];
 
 void FAT16_Init(void)
 {
@@ -363,9 +363,14 @@ void FAT16_CreateBlockDATA(uint8_t *buf, uint16_t nBlockOffset)
 {
   memset(buf, ' ', FAT16_BLOCK_SIZE);
 
-  uint16_t nFilesCount = sizeof(arrFiles) / sizeof(cave_file_t);
-  for (uint8_t i = 0; i < nFilesCount; ++i)
+  nBlockOffset += 2;
+  for (uint8_t i = 0; i < g_nFilesCount; ++i)
   {
+    if (g_arrFatFiles[i].file_size == 0)
+    {
+      continue;
+    }
+
     if (nBlockOffset >= g_arrFatFiles[i].starting_cluster && nBlockOffset <= g_arrFatFiles[i].ending_cluster)
     {
       uint32_t nDataItem = (nBlockOffset - g_arrFatFiles[i].starting_cluster) * ITEMS_PER_SECTOR;
@@ -377,7 +382,7 @@ void FAT16_CreateBlockDATA(uint8_t *buf, uint16_t nBlockOffset)
         }
 
         cave_data_t* pData = &g_arrData[nDataItem + ix];
-        snprintf(g_arrItemBuffer, DATA_ITEM_BUFFER, "%5s;%5s;%5lu;%5d;%5d\n", pData->strFrom, pData->strTo, pData->nDistance_mm, pData->nIncl, pData->nAzimuth);
+        snprintf(g_arrItemBuffer, DATA_ITEM_BUFFER + 1, "%6s;%6s;%5lu;%5d;%5d\n", pData->strFrom, pData->strTo, pData->nDistance_mm, pData->nIncl, pData->nAzimuth);
         memcpy(buf + ix * DATA_ITEM_BUFFER, g_arrItemBuffer, strlen(g_arrItemBuffer));
       }
 
