@@ -81,15 +81,15 @@ typedef struct
 } __attribute((packed)) Fat16DirEntry;
 
 
-#define STORAGE_SIZE                    1048576
+#define STORAGE_SIZE                  26213376
 
-#define FAT16_SECTOR_SIZE                   512
+#define FAT16_SECTOR_SIZE                  512
 #define FAT16_FAT_ITEM_SIZE                  2
 #define FAT16_SECTORS_PER_CLUSTER            1
 #define FAT16_BLOCK_SIZE                  (FAT16_SECTOR_SIZE * FAT16_SECTORS_PER_CLUSTER)
 #define FAT16_RESERVED_SECTORS               1
 #define FAT16_NUMBER_OF_FATS                 1
-#define FAT16_FAT_SIZE_SECTORS               2
+#define FAT16_FAT_SIZE_SECTORS             200
 #define FAT16_FAT_ITEMS_PER_SECTOR        (FAT16_BLOCK_SIZE / FAT16_FAT_ITEM_SIZE)
 #define FAT16_DIR_ENTRIES                  128
 #define FAT16_DIR_ENTRY_SIZE                32
@@ -116,13 +116,13 @@ const static Fat16BootSector g_BootRecordFAT16struct =
    .reserved_sectors = FAT16_RESERVED_SECTORS,
    .number_of_fats = FAT16_NUMBER_OF_FATS,
    .root_dir_entries = FAT16_DIR_ENTRIES,  // *32 je velikost DIR (8 blocks)
-   .total_sectors_short = 0,
+   .total_sectors_short = 65535,
    .media_descriptor = 0xF8,
    .fat_size_sectors = FAT16_FAT_SIZE_SECTORS,
    .sectors_per_track = 63,
    .number_of_heads = 255,
    .hidden_sectors = 129,
-   .total_sectors_long = 65535,
+   .total_sectors_long = 0,
    .drive_number = 0x80,
    .current_head = 0,
    .boot_signature = 41,
@@ -132,101 +132,36 @@ const static Fat16BootSector g_BootRecordFAT16struct =
    .boot_sector_signature = 0xAA55,
 };
 
-
-
 const static uint8_t g_FATSect0[] =
 {
     0xF8, 0xFF, 0xFF, 0xFF
 };
 
-const static Fat16DirEntry Dir[] =
+static const Fat16DirEntry g_VolumeLabelFile =
 {
-    {
-        .filename = "CAVEATRO",
-        .ext = "N  ",
-        .attributes = 0x08,
-        .modify_time = 0,
-        .modify_date = 0,
-        .starting_cluster = 0,
-        .file_size = 0,
-    },
-
-    {
-        .filename = "A1      ",
-        .ext = "DAT",
-        .attributes = 0x21,
-        .modify_time = 0xA35A,
-        .modify_date = 0x4081,
-        .starting_cluster = 2,
-        .file_size = 20,
-    },
-
-    {
-        .filename = "TEST    ",
-        .ext = "C  ",
-        .attributes = 0x21,
-        .modify_time = 0xA35A,
-        .modify_date = 0x4081,
-        .starting_cluster = 2,
-        .file_size = 11,
-    },
-
-    {
-        .filename = "SUBDIR  ",
-        .ext = "   ",
-        .attributes = 0x10,
-        .modify_time = 0xA35A,
-        .modify_date = 0x4081,
-        .starting_cluster = 15,
-        .file_size = 0,
-    }
+  .filename = "CAVEATRO",
+  .ext = "N  ",
+  .attributes = 0x08,
+  .modify_time = 0,
+  .modify_date = 0,
+  .starting_cluster = 0,
+  .file_size = 0,
 };
 
-
-
-uint32_t FAT16_GetStorageSize(void)
-{
-  return STORAGE_SIZE;
-}
-
+//static const Fat16DirEntry g_SubDirFile =
+//{
+//  .filename = "SUBDIR  ",
+//  .ext = "   ",
+//  .attributes = 0x10,
+//  .modify_time = 0xA35A,
+//  .modify_date = 0x4081,
+//  .starting_cluster = 15,
+//  .file_size = 0,
+//};
 
 static Fat16DirEntry g_arrFatFiles[FAT16_DIR_ENTRIES] __attribute__((section(".ccmram")));
 static uint16_t      g_nFilesCount;
 
-static const Fat16DirEntry g_arrFatFilesTempl[] =
-{
-    {
-        .filename = "CAVEATRO",
-        .ext = "N  ",
-        .attributes = 0x08,
-        .modify_time = 0,
-        .modify_date = 0,
-        .starting_cluster = 0,
-        .file_size = 0,
-    },
-
-    {
-        .filename = "TEST1   ",
-        .ext  = "TXT",
-        .attributes = 0x21,
-        .modify_time = 0xA35A,
-        .modify_date = 0x4081,
-        .file_size   = 1000,
-        .starting_cluster = 2,
-        .ending_cluster   = 3,
-    },
-
-    {
-        .filename = "TEST2   ",
-        .ext  = "TXT",
-        .attributes = 0x21,
-        .modify_time = 0xA35A,
-        .modify_date = 0x4081,
-        .file_size   = 100,
-        .starting_cluster = 2,
-        .ending_cluster   = 2,
-    },
-};
 
 typedef struct
 {
@@ -274,7 +209,7 @@ void FAT16_Init(void)
   char*  strHeader = "From;To;Length;Azimuth;Inclination\n";
 
   // add volume name entry
-  memcpy (&g_arrFatFiles[0], &g_arrFatFilesTempl[0], sizeof(Fat16DirEntry));
+  memcpy (&g_arrFatFiles[0], &g_VolumeLabelFile, sizeof(Fat16DirEntry));
   g_nFilesCount = 1;
 
   // add all files from Flash storage
@@ -284,14 +219,12 @@ void FAT16_Init(void)
   dirEntry.modify_time = 0xA35A;
   dirEntry.modify_date = 0x4E81;
   memcpy(dirEntry.ext, "TXT", 3);
-//  snprintf((char*)dirEntry.ext, 3, "%s", "TXT");
 
   uint16_t nFilesCount = sizeof(arrFiles) / sizeof(cave_file_t);
   for (uint8_t i = 0; i < nFilesCount; ++i)
   {
     memset(dirEntry.filename, ' ', 8);
     memcpy(dirEntry.filename, arrFiles[i].strFilename, strlen(arrFiles[i].strFilename));
-//    snprintf((char*)dirEntry.filename, 8, "%s", arrFiles[i].strFilename);
     dirEntry.file_size = arrFiles[i].nDataCount * DATA_ITEM_BUFFER;
     dirEntry.starting_cluster = nCluster;
     nCluster += dirEntry.file_size / FAT16_BLOCK_SIZE;
@@ -304,18 +237,15 @@ void FAT16_Init(void)
   }
 }
 
-
 void FAT16_CreateBlockFAT(uint8_t *buf, uint16_t nBlockOffset)
 {
-  static uint16_t nLastFile = 0;
-
   uint16_t nSectorIndex = nBlockOffset * FAT16_FAT_ITEMS_PER_SECTOR;
   memset(buf, 0, FAT16_BLOCK_SIZE);
+
   if (nBlockOffset == 0)
   {
     memcpy(buf, g_FATSect0, sizeof(g_FATSect0));
     nSectorIndex = 2;
-    nLastFile = 0;
   }
 
   for (uint16_t i = 0; i < g_nFilesCount; ++i)
@@ -418,4 +348,9 @@ void FAT16_CreateBlock(uint8_t *buf, uint32_t blk_addr, uint16_t blk_len)
     nBufPos += FAT16_BLOCK_SIZE;
     blk_addr++;
   }
+}
+
+uint32_t FAT16_GetStorageSize(void)
+{
+  return STORAGE_SIZE;
 }
