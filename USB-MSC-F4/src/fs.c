@@ -24,6 +24,12 @@ static int _FS_traverse_df_cb(void *p, lfs_block_t block);
 static lfs_t lfs;
 static lfs_file_t file;
 
+#define FS_BUFFER_SIZE        256
+
+static uint8_t g_readBuff[FS_BUFFER_SIZE];
+static uint8_t g_writeBuff[FS_BUFFER_SIZE];
+static uint8_t g_lookaheadBuff[FS_BUFFER_SIZE];
+
 // configuration of the filesystem is provided by this struct
 const struct lfs_config cfg =
 {
@@ -34,11 +40,16 @@ const struct lfs_config cfg =
     .sync  = _FS_block_device_sync,
 
     // block device configuration
-    .read_size = 16,
-    .prog_size = 16,
-    .block_size = 4096,
-    .block_count = 128,
-//    .lookahead = 128,
+    .read_size          = FS_BUFFER_SIZE,
+    .prog_size          = FS_BUFFER_SIZE,
+    .block_size         = 4096,
+    .block_count        = 128,
+    .cache_size         = FS_BUFFER_SIZE,
+    .lookahead_size     = FS_BUFFER_SIZE,
+    .block_cycles       = 1000,
+    .read_buffer        = g_readBuff,
+    .prog_buffer        = g_writeBuff,
+    .lookahead_buffer   = g_lookaheadBuff,
 };
 
 
@@ -53,8 +64,8 @@ bool FS_Init(void)
   // this should only happen on the first boot
   if (err)
   {
-    lfs_format(&lfs, &cfg);
-    lfs_mount(&lfs, &cfg);
+    err = lfs_format(&lfs, &cfg);
+    err = lfs_mount(&lfs, &cfg);
   }
 
   return true;
@@ -226,15 +237,17 @@ int _FS_traverse_df_cb(void *p, lfs_block_t block)
 
 int32_t FS_GetFreeSize(int32_t* pnSize, int32_t* pnFreeSize)
 {
-  uint32_t _df_nballocatedblock = 0;
-  int err = lfs_traverse(&lfs, _FS_traverse_df_cb, &_df_nballocatedblock);
-  if (err == LFS_ERR_OK)
-  {
-    *pnSize = cfg.block_count * cfg.block_size;
-    *pnFreeSize = *pnSize - _df_nballocatedblock * cfg.block_size;
-  }
-
-  return err;
+  lfs_ssize_t size = lfs_fs_size(&lfs);
+//  uint32_t _df_nballocatedblock = 0;
+//  int err = lfs_traverse(&lfs, _FS_traverse_df_cb, &_df_nballocatedblock);
+//  if (err == LFS_ERR_OK)
+//  {
+//    *pnSize = cfg.block_count * cfg.block_size;
+//    *pnFreeSize = *pnSize - _df_nballocatedblock * cfg.block_size;
+//  }
+//
+//  return err;
+  return (int32_t)size;
 }
 
 // interface to flash memory ---------------------------

@@ -95,7 +95,7 @@ FlashG25Status_t FlashG25_GetStatus()
   return *pStatus;
 }
 
-void FlashG25_ReadData(uint32_t nAddr, uint8_t* pBuffer, uint8_t length)
+void FlashG25_ReadData(uint32_t nAddr, uint8_t* pBuffer, uint32_t length)
 {
   CS_ENABLE;
   spi_SendData8(g_pDrv, G25_COMID_READ_DATA);
@@ -108,7 +108,7 @@ void FlashG25_ReadData(uint32_t nAddr, uint8_t* pBuffer, uint8_t length)
   CS_DISABLE;
 }
 
-void FlashG25_WriteData(uint32_t nAddr, uint8_t* pBuffer, uint8_t length)
+void FlashG25_WriteData(uint32_t nAddr, uint8_t* pBuffer, uint32_t length)
 {
   uint16_t nBlockSize;
   uint16_t nPhysSize;

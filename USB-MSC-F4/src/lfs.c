@@ -10,6 +10,30 @@
 #define LFS_BLOCK_NULL ((lfs_block_t)-1)
 #define LFS_BLOCK_INLINE ((lfs_block_t)-2)
 
+#define LFS_FILE_BUFFER        256
+static uint8_t file_buffer[LFS_FILE_BUFFER];
+
+// Allocate memory, only used if buffers are not provided to littlefs
+// Note, memory must be 64-bit aligned
+static inline void *lfs_malloc(size_t size) {
+#ifndef LFS_NO_MALLOC
+//    return malloc(size);
+  return file_buffer;
+#else
+    (void)size;
+    return NULL;
+#endif
+}
+
+// Deallocate memory, only used if buffers are not provided to littlefs
+static inline void lfs_free(void *p) {
+#ifndef LFS_NO_MALLOC
+    free(p);
+#else
+    (void)p;
+#endif
+}
+
 /// Caching block device operations ///
 static inline void lfs_cache_drop(lfs_t *lfs, lfs_cache_t *rcache) {
     // do not zero, cheaper if cache is readonly or only going to be

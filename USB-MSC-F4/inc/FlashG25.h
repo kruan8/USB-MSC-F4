@@ -42,10 +42,10 @@ bool FlashG25_Init(void);
 uint32_t FlashG25_GetID();
 
 FlashG25Status_t FlashG25_GetStatus();
-void FlashG25_ReadData(uint32_t nAddr, uint8_t* pBuffer, uint8_t length);
+void FlashG25_ReadData(uint32_t nAddr, uint8_t* pBuffer, uint32_t length);
 void FlashG25_WriteEnable();
 void FlashG25_WriteDisable();
-void FlashG25_WriteData(uint32_t nAddr, uint8_t* pBuffer, uint8_t length);
+void FlashG25_WriteData(uint32_t nAddr, uint8_t* pBuffer, uint32_t length);
 void FlashG25_SectorErase(uint32_t nAddr);
 bool FlashG25_IsPresent();
 void FlashG25_SetDeepPower();

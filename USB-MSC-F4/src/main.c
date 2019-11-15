@@ -22,6 +22,8 @@
 #include <usbd_desc.h>
 #include <usbd_msc_core.h>
 #include "fat16.h"
+#include "fs.h"
+#include "FlashG25.h"
 
 __ALIGN_BEGIN USB_OTG_CORE_HANDLE USB_OTG_dev __ALIGN_END; ///< USB device handle
 
@@ -32,6 +34,20 @@ __ALIGN_BEGIN USB_OTG_CORE_HANDLE USB_OTG_dev __ALIGN_END; ///< USB device handl
  */
 int main(void)
 {
+  FlashG25_Init();
+  FS_Init();
+
+  int32_t nSize;
+  int32_t nFreeSize;
+  FS_GetFreeSize(&nSize, &nFreeSize);
+  FS_NewDataFile("TEST");
+
+
+
+
+
+
+
 
   FAT16_Init();
 
