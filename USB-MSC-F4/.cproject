@@ -116,11 +116,6 @@
 							<tool id="com.atollic.truestudio.ar.base.347924701" name="Archiver" superClass="com.atollic.truestudio.ar.base"/>
 						</toolChain>
 					</folderInfo>
-					<fileInfo id="com.atollic.truestudio.exe.debug.1011318863.1720040862" name="usbd_storage_template.c" rcbsApplicability="disable" resourcePath="Libraries/STM32_USB_Device_Library/Class/msc/src/usbd_storage_template.c" toolsToInvoke="com.atollic.truestudio.exe.debug.toolchain.gcc.619999810.783267561">
-						<tool id="com.atollic.truestudio.exe.debug.toolchain.gcc.619999810.783267561" name="C Compiler" superClass="com.atollic.truestudio.exe.debug.toolchain.gcc.619999810">
-							<inputType id="com.atollic.truestudio.gcc.input.1150422096" superClass="com.atollic.truestudio.gcc.input"/>
-						</tool>
-					</fileInfo>
 					<sourceEntries>
 						<entry excluding="STM32_USB_Device_Library/Class/msc/src/usbd_storage_template.c" flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name="Libraries"/>
 						<entry flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name="src"/>
