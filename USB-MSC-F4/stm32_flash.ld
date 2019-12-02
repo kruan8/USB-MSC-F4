@@ -155,13 +155,13 @@ SECTIONS
   * If variables placed in this section must be zero initialized,
   * the startup code needs to be modified to initialize this section.  
   */
-  .ccmram  (NOLOAD):
+  .ccmram :
   {
     . = ALIGN(4);
     _sccmram = .;       /* create a global symbol at ccmram start */
-    *(.ccmram)
-    *(.ccmram*)
-    
+    /**(.ccmram)					/* .ccram section
+    *(.ccmram*)*/
+    KEEP(*(.ccmram))
     . = ALIGN(4);
     _eccmram = .;       /* create a global symbol at ccmram end */
   } >CCMRAM

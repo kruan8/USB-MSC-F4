@@ -116,27 +116,13 @@
 							<tool id="com.atollic.truestudio.ar.base.347924701" name="Archiver" superClass="com.atollic.truestudio.ar.base"/>
 						</toolChain>
 					</folderInfo>
-					<folderInfo id="com.atollic.truestudio.exe.debug.1011318863.2070598792" name="/" resourcePath="inc">
-						<toolChain id="com.atollic.truestudio.exe.debug.toolchain.846983255" name="Atollic ARM Tools" superClass="com.atollic.truestudio.exe.debug.toolchain" unusedChildren="">
-							<option id="com.atollic.truestudio.general.runtimelib.1875349535.419184801" name="Runtime Library" superClass="com.atollic.truestudio.general.runtimelib.1875349535"/>
-							<option id="com.atollic.truestudio.toolchain_options.mcu.1272155896.903461835" name="Microcontroller" superClass="com.atollic.truestudio.toolchain_options.mcu.1272155896"/>
-							<option id="com.atollic.truestudio.toolchain_options.vendor.1347908208.470773172" name="Vendor name" superClass="com.atollic.truestudio.toolchain_options.vendor.1347908208"/>
-							<tool id="com.atollic.truestudio.exe.debug.toolchain.as.765550300" name="Assembler" superClass="com.atollic.truestudio.exe.debug.toolchain.as.378701121">
-								<inputType id="com.atollic.truestudio.as.input.2078655146" name="Input" superClass="com.atollic.truestudio.as.input"/>
-							</tool>
-							<tool id="com.atollic.truestudio.exe.debug.toolchain.gcc.1592621096" name="C Compiler" superClass="com.atollic.truestudio.exe.debug.toolchain.gcc.619999810">
-								<inputType id="com.atollic.truestudio.gcc.input.2002579766" superClass="com.atollic.truestudio.gcc.input"/>
-							</tool>
-							<tool id="com.atollic.truestudio.exe.debug.toolchain.ld.1131768451" name="C Linker" superClass="com.atollic.truestudio.exe.debug.toolchain.ld.1911233290"/>
-							<tool id="com.atollic.truestudio.exe.debug.toolchain.gpp.1837740972" name="C++ Compiler" superClass="com.atollic.truestudio.exe.debug.toolchain.gpp.132545810"/>
-							<tool id="com.atollic.truestudio.exe.debug.toolchain.ldcc.1064935985" name="C++ Linker" superClass="com.atollic.truestudio.exe.debug.toolchain.ldcc.1386313057"/>
-							<tool id="com.atollic.truestudio.ar.base.2073878404" name="Archiver" superClass="com.atollic.truestudio.ar.base.347924701"/>
-							<tool id="com.atollic.truestudio.exe.debug.toolchain.secoutput.645747276" name="Other" superClass="com.atollic.truestudio.exe.debug.toolchain.secoutput.649097858"/>
-						</toolChain>
-					</folderInfo>
+					<fileInfo id="com.atollic.truestudio.exe.debug.1011318863.1720040862" name="usbd_storage_template.c" rcbsApplicability="disable" resourcePath="Libraries/STM32_USB_Device_Library/Class/msc/src/usbd_storage_template.c" toolsToInvoke="com.atollic.truestudio.exe.debug.toolchain.gcc.619999810.783267561">
+						<tool id="com.atollic.truestudio.exe.debug.toolchain.gcc.619999810.783267561" name="C Compiler" superClass="com.atollic.truestudio.exe.debug.toolchain.gcc.619999810">
+							<inputType id="com.atollic.truestudio.gcc.input.1150422096" superClass="com.atollic.truestudio.gcc.input"/>
+						</tool>
+					</fileInfo>
 					<sourceEntries>
 						<entry excluding="STM32_USB_Device_Library/Class/msc/src/usbd_storage_template.c" flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name="Libraries"/>
-						<entry flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name="inc"/>
 						<entry flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name="src"/>
 						<entry flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name="startup"/>
 					</sourceEntries>

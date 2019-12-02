@@ -159,6 +159,9 @@ static const Fat16DirEntry g_VolumeLabelFile =
 //  .file_size = 0,
 //};
 
+extern uint32_t _sccmram;
+static uint32_t* pCCMRAM = &_sccmram;
+
 static Fat16DirEntry g_arrFatFiles[FAT16_DIR_ENTRIES] __attribute__((section(".ccmram")));
 static uint16_t      g_nFilesCount;
 
@@ -194,6 +197,10 @@ typedef struct
 
 static cave_data_t  g_arrData[DATA_COUNT];
 static char         g_arrItemBuffer[DATA_ITEM_BUFFER + 1];
+
+void _CreateBlockFAT(uint8_t *buf, uint16_t nBlockOffset);
+void _CreateBlockDIR(uint8_t *buf, uint16_t nBlockOffset);
+void _CreateBlockDATA(uint8_t *buf, uint16_t nBlockOffset);
 
 void FAT16_Init(void)
 {
@@ -237,7 +244,7 @@ void FAT16_Init(void)
   }
 }
 
-void FAT16_CreateBlockFAT(uint8_t *buf, uint16_t nBlockOffset)
+void _CreateBlockFAT(uint8_t *buf, uint16_t nBlockOffset)
 {
   uint16_t nSectorIndex = nBlockOffset * FAT16_FAT_ITEMS_PER_SECTOR;
   memset(buf, 0, FAT16_BLOCK_SIZE);
@@ -279,7 +286,7 @@ void FAT16_CreateBlockFAT(uint8_t *buf, uint16_t nBlockOffset)
   }
 }
 
-void FAT16_CreateBlockDIR(uint8_t *buf, uint16_t nBlockOffset)
+void _CreateBlockDIR(uint8_t *buf, uint16_t nBlockOffset)
 {
   memset(buf, 0, FAT16_BLOCK_SIZE);
   uint16_t  nDirEntryIndex = FAT16_BLOCK_SIZE * nBlockOffset / FAT16_DIR_ENTRY_SIZE;
@@ -289,7 +296,7 @@ void FAT16_CreateBlockDIR(uint8_t *buf, uint16_t nBlockOffset)
   }
 }
 
-void FAT16_CreateBlockDATA(uint8_t *buf, uint16_t nBlockOffset)
+void _CreateBlockDATA(uint8_t *buf, uint16_t nBlockOffset)
 {
   memset(buf, ' ', FAT16_BLOCK_SIZE);
 
@@ -334,15 +341,15 @@ void FAT16_CreateBlock(uint8_t *buf, uint32_t blk_addr, uint16_t blk_len)
     }
     else if (blk_addr >= FAT16_FAT_BLOCK && blk_addr < FAT16_DIR_BLOCK)
     {
-      FAT16_CreateBlockFAT(buf + nBufPos, blk_addr - FAT16_FAT_BLOCK);
+      _CreateBlockFAT(buf + nBufPos, blk_addr - FAT16_FAT_BLOCK);
     }
     else if (blk_addr >= FAT16_DIR_BLOCK && blk_addr < FAT16_DATA_BLOCK)
     {
-      FAT16_CreateBlockDIR(buf + nBufPos, blk_addr - FAT16_DIR_BLOCK);
+      _CreateBlockDIR(buf + nBufPos, blk_addr - FAT16_DIR_BLOCK);
     }
     else
     {
-      FAT16_CreateBlockDATA(buf + nBufPos, blk_addr - FAT16_DATA_BLOCK);
+      _CreateBlockDATA(buf + nBufPos, blk_addr - FAT16_DATA_BLOCK);
     }
 
     nBufPos += FAT16_BLOCK_SIZE;
