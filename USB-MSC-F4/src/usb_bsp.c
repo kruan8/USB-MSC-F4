@@ -99,8 +99,8 @@ extern USB_OTG_CORE_HANDLE USB_OTG_dev;
 void USB_OTG_BSP_Init(USB_OTG_CORE_HANDLE *pdev) {
 
   GPIO_InitTypeDef GPIO_InitStructure;    
-  EXTI_InitTypeDef EXTI_InitStructure;
-  NVIC_InitTypeDef NVIC_InitStructure; 
+//  EXTI_InitTypeDef EXTI_InitStructure;
+//  NVIC_InitTypeDef NVIC_InitStructure;
 
   // enable USB pins clock
   RCC_AHB1PeriphClockCmd(RCC_AHB1Periph_GPIOA, ENABLE);
@@ -108,7 +108,7 @@ void USB_OTG_BSP_Init(USB_OTG_CORE_HANDLE *pdev) {
   // PA8 - SOF
   // PA11 - DM
   // PA12 - DP
-  GPIO_InitStructure.GPIO_Pin = GPIO_Pin_8  | 
+  GPIO_InitStructure.GPIO_Pin = /*GPIO_Pin_8  |*/
                                 GPIO_Pin_11 | 
                                 GPIO_Pin_12;
   
@@ -118,25 +118,25 @@ void USB_OTG_BSP_Init(USB_OTG_CORE_HANDLE *pdev) {
   GPIO_InitStructure.GPIO_PuPd = GPIO_PuPd_NOPULL ;
   GPIO_Init(GPIOA, &GPIO_InitStructure);  
   
-  GPIO_PinAFConfig(GPIOA,GPIO_PinSource8,GPIO_AF_OTG1_FS) ;
+//  GPIO_PinAFConfig(GPIOA,GPIO_PinSource8,GPIO_AF_OTG1_FS) ;
   GPIO_PinAFConfig(GPIOA,GPIO_PinSource11,GPIO_AF_OTG1_FS) ; 
   GPIO_PinAFConfig(GPIOA,GPIO_PinSource12,GPIO_AF_OTG1_FS) ;
   
-  /* Configure VBUS Pin */
-  GPIO_InitStructure.GPIO_Pin = GPIO_Pin_9;
-  GPIO_InitStructure.GPIO_Speed = GPIO_Speed_100MHz;
-  GPIO_InitStructure.GPIO_Mode = GPIO_Mode_IN;
-  GPIO_InitStructure.GPIO_OType = GPIO_OType_OD;
-  GPIO_InitStructure.GPIO_PuPd = GPIO_PuPd_NOPULL ;
-  GPIO_Init(GPIOA, &GPIO_InitStructure);    
-  
-  /* Configure ID pin */
-  GPIO_InitStructure.GPIO_Pin =  GPIO_Pin_10;
-  GPIO_InitStructure.GPIO_OType = GPIO_OType_OD;
-  GPIO_InitStructure.GPIO_PuPd = GPIO_PuPd_UP;
-  GPIO_InitStructure.GPIO_Speed = GPIO_Speed_100MHz;
-  GPIO_Init(GPIOA, &GPIO_InitStructure);  
-  GPIO_PinAFConfig(GPIOA,GPIO_PinSource10,GPIO_AF_OTG1_FS) ;   
+//  /* Configure VBUS Pin */
+//  GPIO_InitStructure.GPIO_Pin = GPIO_Pin_9;
+//  GPIO_InitStructure.GPIO_Speed = GPIO_Speed_100MHz;
+//  GPIO_InitStructure.GPIO_Mode = GPIO_Mode_IN;
+//  GPIO_InitStructure.GPIO_OType = GPIO_OType_OD;
+//  GPIO_InitStructure.GPIO_PuPd = GPIO_PuPd_NOPULL ;
+//  GPIO_Init(GPIOA, &GPIO_InitStructure);
+//
+//  /* Configure ID pin */
+//  GPIO_InitStructure.GPIO_Pin =  GPIO_Pin_10;
+//  GPIO_InitStructure.GPIO_OType = GPIO_OType_OD;
+//  GPIO_InitStructure.GPIO_PuPd = GPIO_PuPd_UP;
+//  GPIO_InitStructure.GPIO_Speed = GPIO_Speed_100MHz;
+//  GPIO_Init(GPIOA, &GPIO_InitStructure);
+//  GPIO_PinAFConfig(GPIOA,GPIO_PinSource10,GPIO_AF_OTG1_FS) ;
 
   RCC_APB2PeriphClockCmd(RCC_APB2Periph_SYSCFG, ENABLE);
   RCC_AHB2PeriphClockCmd(RCC_AHB2Periph_OTG_FS, ENABLE) ; 
@@ -145,36 +145,36 @@ void USB_OTG_BSP_Init(USB_OTG_CORE_HANDLE *pdev) {
   RCC_APB1PeriphResetCmd(RCC_APB1Periph_PWR, ENABLE);   
   
 
-  // Enable pushbutton PA0 for wakeup
-  /* Enable the BUTTON Clock */
-  RCC_AHB1PeriphClockCmd(RCC_AHB1Periph_GPIOA, ENABLE);
-  RCC_APB2PeriphClockCmd(RCC_APB2Periph_SYSCFG, ENABLE);
-
-  /* Configure Button pin as input */
-  GPIO_InitStructure.GPIO_Mode = GPIO_Mode_IN;
-  GPIO_InitStructure.GPIO_PuPd = GPIO_PuPd_NOPULL;
-  GPIO_InitStructure.GPIO_Pin = GPIO_Pin_0;
-  GPIO_Init(GPIOA, &GPIO_InitStructure);
-
-  /* Connect Button EXTI Line to Button GPIO Pin */
-  SYSCFG_EXTILineConfig(EXTI_PortSourceGPIOA, EXTI_PinSource0);
-
-  /* Configure Button EXTI line */
-  EXTI_InitStructure.EXTI_Line = EXTI_Line0;
-  EXTI_InitStructure.EXTI_Mode = EXTI_Mode_Interrupt;
-  EXTI_InitStructure.EXTI_Trigger = EXTI_Trigger_Rising;
-  EXTI_InitStructure.EXTI_LineCmd = ENABLE;
-  EXTI_Init(&EXTI_InitStructure);
-
-  /* Enable and set Button EXTI Interrupt to the lowest priority */
-  NVIC_InitStructure.NVIC_IRQChannel = EXTI0_IRQn;
-  NVIC_InitStructure.NVIC_IRQChannelPreemptionPriority = 0x0F;
-  NVIC_InitStructure.NVIC_IRQChannelSubPriority = 0x0F;
-  NVIC_InitStructure.NVIC_IRQChannelCmd = ENABLE;
-
-  NVIC_Init(&NVIC_InitStructure);
-
-  EXTI_ClearITPendingBit(EXTI_Line0);
+//  // Enable pushbutton PA0 for wakeup
+//  /* Enable the BUTTON Clock */
+//  RCC_AHB1PeriphClockCmd(RCC_AHB1Periph_GPIOA, ENABLE);
+//  RCC_APB2PeriphClockCmd(RCC_APB2Periph_SYSCFG, ENABLE);
+//
+//  /* Configure Button pin as input */
+//  GPIO_InitStructure.GPIO_Mode = GPIO_Mode_IN;
+//  GPIO_InitStructure.GPIO_PuPd = GPIO_PuPd_NOPULL;
+//  GPIO_InitStructure.GPIO_Pin = GPIO_Pin_0;
+//  GPIO_Init(GPIOA, &GPIO_InitStructure);
+//
+//  /* Connect Button EXTI Line to Button GPIO Pin */
+//  SYSCFG_EXTILineConfig(EXTI_PortSourceGPIOA, EXTI_PinSource0);
+//
+//  /* Configure Button EXTI line */
+//  EXTI_InitStructure.EXTI_Line = EXTI_Line0;
+//  EXTI_InitStructure.EXTI_Mode = EXTI_Mode_Interrupt;
+//  EXTI_InitStructure.EXTI_Trigger = EXTI_Trigger_Rising;
+//  EXTI_InitStructure.EXTI_LineCmd = ENABLE;
+//  EXTI_Init(&EXTI_InitStructure);
+//
+//  /* Enable and set Button EXTI Interrupt to the lowest priority */
+//  NVIC_InitStructure.NVIC_IRQChannel = EXTI0_IRQn;
+//  NVIC_InitStructure.NVIC_IRQChannelPreemptionPriority = 0x0F;
+//  NVIC_InitStructure.NVIC_IRQChannelSubPriority = 0x0F;
+//  NVIC_InitStructure.NVIC_IRQChannelCmd = ENABLE;
+//
+//  NVIC_Init(&NVIC_InitStructure);
+//
+//  EXTI_ClearITPendingBit(EXTI_Line0);
 
   // EXTI line 18 is connected to USB OTG FS Wakeup event
 #ifdef USB_OTG_FS_LOW_PWR_MGMT_SUPPORT

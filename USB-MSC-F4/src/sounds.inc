@@ -1,0 +1,456 @@
+
+typedef enum
+{
+  snd_1C     = 262,
+  snd_1Cis   = 277,
+  snd_1D     = 294,
+  snd_1Dis   = 311,
+  snd_1E     = 330,
+  snd_1F     = 349,
+  snd_1Fis   = 370,
+  snd_1G     = 392,
+  snd_1Gis   = 416,
+  snd_1A     = 440,
+  snd_1Ais   = 466,
+  snd_1H     = 494,
+  snd_2C     = 523,
+  snd_2Cis   = 554,
+  snd_2D     = 587,
+  snd_2Dis   = 622,
+  snd_2E     = 659,
+  snd_2F     = 698,
+  snd_2Fis   = 740,
+  snd_2G     = 784,
+  snd_2Gis   = 831,
+  snd_2A     = 880,
+  snd_2Ais   = 932,
+  snd_2H     = 988,
+  snd_3C     = 1047,
+  snd_3Cis   = 1109,
+  snd_3D     = 1175,
+  snd_3Dis   = 1245,
+  snd_3E     = 1319,
+  snd_3F     = 1397,
+  snd_3Fis   = 1480,
+  snd_3G     = 1568,
+  snd_3Gis   = 1661,
+  snd_3A     = 1760,
+  snd_3Ais   = 1865,
+  snd_3H     = 1976,
+  snd_4C     = 2093,
+  snd_pause  = 0,
+} snd_notes_e;
+
+typedef struct
+{
+  snd_notes_e eNote;          // note
+  uint8_t     nLen;           // delka tonu je v 10 ms (20 = 200ms)
+  int8_t      nFreqChange;    // zmena kmitoctu tonu v 1/10ms
+} snd_tone_t;
+
+const snd_tone_t testSound[] =
+{
+    { snd_1C,     40, 0 },
+    { snd_1D,     40, 0 },
+    { snd_1E,     40, 0 },
+    { snd_1F,     40, 0 },
+    { snd_1G,     40, 0 },
+    { snd_1A,     40, 0 },
+    { snd_1H,     40, 0 },
+    { snd_2C,     40, 0 },
+    { snd_2D,     40, 0 },
+    { snd_2E,     40, 0 },
+    { snd_2F,     40, 0 },
+    { snd_2G,     40, 0 },
+    { snd_2A,     40, 0 },
+    { snd_2H,     40, 0 },
+    { snd_3C,     40, 0 },
+    { snd_3D,     40, 0 },
+    { snd_3E,     40, 0 },
+    { snd_3F,     40, 0 },
+    { snd_3G,     40, 0 },
+    { snd_3A,     40, 0 },
+    { snd_3H,     40, 0 },
+    { snd_4C,     40, 0 },
+    { snd_pause, 160, 0 },
+    { snd_pause, 160, 0 },
+    { snd_1Cis,   40, 0 },
+    { snd_1Dis,   40, 0 },
+    { snd_1Fis,   40, 0 },
+    { snd_1Gis,   40, 0 },
+    { snd_1Ais,   40, 0 },
+    { snd_2Cis,   40, 0 },
+    { snd_2Dis,   40, 0 },
+    { snd_2Fis,   40, 0 },
+    { snd_2Gis,   40, 0 },
+    { snd_2Ais,   40, 0 },
+    { snd_3Cis,   40, 0 },
+    { snd_3Dis,   40, 0 },
+    { snd_3Fis,   40, 0 },
+    { snd_3Gis,   40, 0 },
+    { snd_3Ais,   40, 0 },
+    { snd_pause,   0, 0 },
+};
+
+// OVACE
+const snd_tone_t t3x20[] =
+{
+    { snd_4C,   10, 0 },
+    { snd_3C,   10, 0 },
+    { snd_4C,   10, 0 },
+    { snd_3C,   10, 0 },
+    { snd_4C,   10, 0 },
+    { snd_3C,   10, 0 },
+    { snd_4C,   10, 0 },
+    { snd_3C,   10, 0 },
+    { snd_4C,   10, 0 },
+    { snd_3C,   10, 0 },
+    { snd_pause, 0, 0 },
+};
+
+const snd_tone_t t3x19[] =
+{
+    { snd_1C,   15, 0 },
+    { snd_1C,   15, 0 },
+    { snd_1C,   15, 0 },
+    { snd_1G,   15, 0 },
+    { snd_1G,   30, 0 },
+    { snd_pause, 0, 0 },
+};
+
+const snd_tone_t t3x18[] =
+{
+    { snd_1E,   20, 0 },
+    { snd_1E,   20, 0 },
+    { snd_1E,   20, 0 },
+    { snd_1C,   40, 0 },
+    { snd_pause, 0, 0 },
+};
+
+const snd_tone_t t3x17[] =
+{
+    { snd_1C,   30, 0 },
+    { snd_1C,   15, 0 },
+    { snd_1D,   15, 0 },
+    { snd_1E,   30, 0 },
+    { snd_1C,   30, 0 },
+    { snd_pause, 0, 0 },
+};
+
+const snd_tone_t t2x25[] =
+{
+    { snd_1C,   20, 0 },
+    { snd_1E,   20, 0 },
+    { snd_1G,   20, 0 },
+    { snd_1C,   40, 0 },
+    { snd_1C,   40, 0 },
+    { snd_pause, 0, 0 },
+};
+
+const snd_tone_t pip1[] =
+{
+    { snd_2A,   10, 0 },
+    { snd_pause, 0, 0 },
+};
+
+const snd_tone_t pip2[] =
+{
+    { snd_2A,   10, 0 },
+    { snd_pause, 4, 0 },
+    { snd_2A,   10, 0 },
+    { snd_pause, 4, 0 },
+    { snd_pause, 0, 0 },
+};
+
+const snd_tone_t pip3[] =
+{
+    { snd_2A,   10, 0 },
+    { snd_pause, 4, 0 },
+    { snd_2A,   10, 0 },
+    { snd_pause, 4, 0 },
+    { snd_2A,   10, 0 },
+    { snd_pause, 4, 0 },
+    { snd_pause, 0, 0 },
+};
+
+const snd_tone_t pip2i[] =
+{
+    { snd_2A,   20, 0 },
+    { snd_1A,   20, 0 },
+    { snd_pause, 0, 0 },
+};
+
+const snd_tone_t pip3i[] =
+{
+    { snd_1A,   20, 0 },
+    { snd_2A,   20, 0 },
+    { snd_1A,   20, 0 },
+    { snd_pause, 0, 0 },
+};
+
+const snd_tone_t end[] =
+{
+    { snd_3D,   70, 0 },
+    { snd_2D,   70, 0 },
+    { snd_1E,   70, 0 },
+    { snd_1C,   70, 0 },
+    { snd_pause, 0, 0 },
+};
+
+// OBLADI OBLADA
+const snd_tone_t song1[] =
+{
+    { snd_1Ais,   20, 0 },
+    { snd_2D,     20, 0 },
+    { snd_2F,     20, 0 },
+    { snd_1Ais,   20, 0 },
+    { snd_2D,     20, 0 },
+    { snd_2F,     20, 0 },
+    { snd_1Ais,   20, 0 },
+    { snd_2D,     20, 0 },
+    { snd_2F,     80, 0 },
+    { snd_2Ais,   80, 0 },
+    { snd_pause,  20, 0 },
+    { snd_2F,     40, 0 },
+    { snd_2Dis,   20, 0 },
+    { snd_2D,     20, 0 },
+    { snd_2Dis,   20, 0 },
+    { snd_2D,     20, 0 },
+    { snd_2C,     40, 0 },
+    { snd_1Ais,   80, 0 },
+    { snd_pause,  40, 0 },
+    { snd_1Ais,   20, 0 },
+    { snd_2D,     20, 0 },
+    { snd_2F,     20, 0 },
+    { snd_1Ais,   20, 0 },
+    { snd_2D,     20, 0 },
+    { snd_2F,     20, 0 },
+    { snd_1Ais,   20, 0 },
+    { snd_2D,     20, 0 },
+    { snd_2F,     80, 0 },
+    { snd_2Ais,   80, 0 },
+    { snd_pause,  20, 0 },
+    { snd_2F,     40, 0 },
+    { snd_2Dis,   20, 0 },
+    { snd_2D,     20, 0 },
+    { snd_2Dis,   20, 0 },
+    { snd_2D,     20, 0 },
+    { snd_2C,     40, 0 },
+    { snd_1Ais,   80, 0 },
+    { snd_pause,   0, 0 },
+};
+
+// YESTERDAY
+const snd_tone_t song2[] =
+{
+    { snd_1G,     40, 0 },
+    { snd_1F,     40, 0 },
+    { snd_1F,     80, 0 },
+    { snd_pause,  40, 0 },
+    { snd_1A,     40, 0 },
+    { snd_1H,     40, 0 },
+    { snd_2Cis,   40, 0 },
+    { snd_2D,     40, 0 },
+    { snd_2E,     40, 0 },
+    { snd_2F,     40, 0 },
+    { snd_2E,     60, 0 },
+    { snd_2D,     20, 0 },
+    { snd_2D,     80, 0 },
+    { snd_pause,  40, 0 },
+    { snd_2D,     40, 0 },
+    { snd_2D,     40, 0 },
+    { snd_2C,     40, 0 },
+    { snd_1Ais,   40, 0 },
+    { snd_1A,     40, 0 },
+    { snd_1G,     40, 0 },
+    { snd_1Ais,   40, 0 },
+    { snd_1A,     40, 0 },
+    { snd_1A,    160, 0 },
+    { snd_1G,     80, 0 },
+    { snd_1F,     80, 0 },
+    { snd_1A,     40, 0 },
+    { snd_1G,    120, 0 },
+    { snd_1D,     80, 0 },
+    { snd_1F,     80, 0 },
+    { snd_1A,     40, 0 },
+    { snd_1A,    120, 0 },
+    { snd_pause,   0, 0 },
+};
+
+// TANCUJ, TANCUJ
+const snd_tone_t song3[] =
+{
+    { snd_1E,     40, 0 },
+    { snd_1E,     40, 0 },
+    { snd_1G,     40, 0 },
+    { snd_1G,     40, 0 },
+    { snd_1G,     20, 0 },
+    { snd_1F,     40, 0 },
+    { snd_1F,     20, 0 },
+    { snd_1G,     20, 0 },
+    { snd_1F,     40, 0 },
+    { snd_1F,     20, 0 },
+    { snd_1D,     40, 0 },
+    { snd_1D,     40, 0 },
+    { snd_1F,     40, 0 },
+    { snd_1F,     40, 0 },
+    { snd_1F,     20, 0 },
+    { snd_1E,     40, 0 },
+    { snd_1E,     20, 0 },
+    { snd_1F,     20, 0 },
+    { snd_1E,     40, 0 },
+    { snd_1E,     20, 0 },
+    { snd_1C,     40, 0 },
+    { snd_1C,     40, 0 },
+    { snd_1E,     40, 0 },
+    { snd_1E,     40, 0 },
+    { snd_1E,     20, 0 },
+    { snd_1D,     40, 0 },
+    { snd_1D,     20, 0 },
+    { snd_1E,     20, 0 },
+    { snd_1D,     40, 0 },
+    { snd_1D,     20, 0 },
+    { snd_1G,     40, 0 },
+    { snd_1G,     40, 0 },
+    { snd_1A,     40, 0 },
+    { snd_1H,     40, 0 },
+    { snd_1D,     20, 0 },
+    { snd_1C,     40, 0 },
+    { snd_1C,     20, 0 },
+    { snd_1D,     20, 0 },
+    { snd_1C,     40, 0 },
+    { snd_1C,     20, 0 },
+    { snd_pause,   0, 0 },
+};
+
+// NA TOM PRAZSKYM MOSTE
+const snd_tone_t song4[] =
+{
+    { snd_1A,     25, 0 },
+    { snd_1A,     25, 0 },
+    { snd_1A,     25, 0 },
+    { snd_1A,     25, 0 },
+    { snd_1D,     50, 0 },
+    { snd_1A,     50, 0 },
+    { snd_1Fis,   25, 0 },
+    { snd_1Fis,   25, 0 },
+    { snd_1Fis,   25, 0 },
+    { snd_1Fis,   25, 0 },
+    { snd_1A,     50, 0 },
+    { snd_1Fis,   50, 0 },
+    { snd_1G,     25, 0 },
+    { snd_1H,     25, 0 },
+    { snd_1H,     25, 0 },
+    { snd_1G,     25, 0 },
+    { snd_1Fis,   25, 0 },
+    { snd_1A,     25, 0 },
+    { snd_1A,     25, 0 },
+    { snd_1Fis,   25, 0 },
+    { snd_1E,     25, 0 },
+    { snd_1Fis,   25, 0 },
+    { snd_1G,     25, 0 },
+    { snd_1A,     25, 0 },
+    { snd_1H,     50, 0 },
+    { snd_1A,     50, 0 },
+    { snd_1G,     25, 0 },
+    { snd_1H,     25, 0 },
+    { snd_1H,     25, 0 },
+    { snd_1G,     25, 0 },
+    { snd_1Fis,   25, 0 },
+    { snd_1A,     25, 0 },
+    { snd_1A,     25, 0 },
+    { snd_1Fis,   25, 0 },
+    { snd_1E,     25, 0 },
+    { snd_1Fis,   25, 0 },
+    { snd_1G,     25, 0 },
+    { snd_1A,     25, 0 },
+    { snd_1G,     50, 0 },
+    { snd_1Fis,   50, 0 },
+    { snd_pause,   0, 0 },
+};
+
+// A JA TAKA
+const snd_tone_t song5[] =
+{
+    { snd_1F,     40, 0 },
+    { snd_1F,     40, 0 },
+    { snd_1E,     40, 0 },
+    { snd_1D,     40, 0 },
+    { snd_1A,     40, 0 },
+    { snd_1G,     40, 0 },
+    { snd_1F,     40, 0 },
+    { snd_pause,  40, 0 },
+    { snd_1E,     20, 0 },
+    { snd_1D,     20, 0 },
+    { snd_1Cis,   20, 0 },
+    { snd_1E,     20, 0 },
+    { snd_1D,     40, 0 },
+    { snd_pause,  40, 0 },
+    { snd_1F,     40, 0 },
+    { snd_1A,     40, 0 },
+    { snd_1A,     40, 0 },
+    { snd_1A,     40, 0 },
+    { snd_1G,     40, 0 },
+    { snd_1Ais,   40, 0 },
+    { snd_1A,     40, 0 },
+    { snd_pause,  40, 0 },
+    { snd_1G,     20, 0 },
+    { snd_1F,     20, 0 },
+    { snd_1E,     20, 0 },
+    { snd_1F,     20, 0 },
+    { snd_1G,     40, 0 },
+    { snd_1Gis,   40, 0 },
+    { snd_1A,     40, 0 },
+    { snd_pause,  40, 0 },
+    { snd_1F,     40, 0 },
+    { snd_1F,     40, 0 },
+    { snd_1E,     40, 0 },
+    { snd_1D,     40, 0 },
+    { snd_1A,     40, 0 },
+    { snd_1G,     40, 0 },
+    { snd_1F,     40, 0 },
+    { snd_pause,  40, 0 },
+    { snd_1E,     20, 0 },
+    { snd_1D,     20, 0 },
+    { snd_1Cis,   20, 0 },
+    { snd_1E,     20, 0 },
+    { snd_1D,     40, 0 },
+    { snd_pause,   0, 0 },
+};
+
+// KALAMAJKA
+const snd_tone_t song6[] =
+{
+    { snd_1A,     25, 0 },
+    { snd_1Fis,   25, 0 },
+    { snd_1A,     25, 0 },
+    { snd_1Fis,   25, 0 },
+    { snd_1G,     25, 0 },
+    { snd_1A,     25, 0 },
+    { snd_1H,     25, 0 },
+    { snd_pause,  25, 0 },
+    { snd_1G,     25, 0 },
+    { snd_1E,     25, 0 },
+    { snd_1G,     25, 0 },
+    { snd_1E,     25, 0 },
+    { snd_1Fis,   25, 0 },
+    { snd_1G,     25, 0 },
+    { snd_1A,     25, 0 },
+    { snd_pause,  25, 0 },
+    { snd_1Fis,   25, 0 },
+    { snd_1D,     25, 0 },
+    { snd_1Fis,   25, 0 },
+    { snd_1D,     25, 0 },
+    { snd_1E,     25, 0 },
+    { snd_1Fis,   25, 0 },
+    { snd_1G,     25, 0 },
+    { snd_pause,  25, 0 },
+    { snd_1E,     25, 0 },
+    { snd_1Cis,   25, 0 },
+    { snd_1E,     25, 0 },
+    { snd_1Cis,   25, 0 },
+    { snd_1D,     25, 0 },
+    { snd_1Fis,   25, 0 },
+    { snd_1D,     25, 0 },
+    { snd_pause,   0, 0 },
+};
